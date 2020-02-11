@@ -16,7 +16,9 @@ void getKeysandValues (char **attribs, char ***keys, char ***values);
 unsigned char caseU(char caracter);
 char * printbuffer(char *nueva);
 void showcontent(FILE *in, const char *, struct listgeneric *offsets);
-void showparentstags(FILE *in, struct listgeneric *offsets);
+void showcontent_n1(FILE *in, const char *lasttag, long offset);
+
+void showparentstags(FILE *in, struct listgeneric *listOflists, struct listgeneric *offsets);
 
 
 int main (int argc, char *argv[]) {
@@ -80,9 +82,10 @@ int main (int argc, char *argv[]) {
 
 		}
 		else if(opc == GETPARENTSTAG) {
-			struct listgeneric  *listOfList; 
-			if(findParentsTag(in, argv[4], &listOfList, deepth))  {
-				showparentstags(in, listOfList);				
+			struct listgeneric *listOfList; 
+			struct listgeneric *offsets;
+			if(findParentsTag(in, argv[4], &listOfList, &offsets, deepth))  {
+				showparentstags(in, listOfList, offsets);				
 
 			}
 
@@ -127,7 +130,7 @@ char * printbuffer(char *nueva) {
 
 	if(nueva[0] != '\0') 
 		asprintf(&output, "%s\n%d: %s", output, elements, nueva );
-
+	elements++;
 	return output;
 
 }
@@ -167,15 +170,31 @@ void showcontent(FILE *in, const char *lasttag, struct listgeneric *offsets) {
 
 }
 
+/**
+ *
+ */
+void showcontent_n1(FILE *in, const char *lasttag, long offset) {
+	char *buffer;
+	fseek(in, offset, SEEK_SET);
+	if(readcontent(in, &buffer, lasttag) ) {
+		printf("%s", buffer);
+	}
+}
 
-void showparentstags(FILE *in, struct listgeneric *listOfLists) {
-	struct list *listoflist_piv = listOfLists->head;
-	int elements = 1;
+/**
+ *
+ */
+void showparentstags(FILE *in, struct listgeneric *listOfLists, struct listgeneric *offsets) {
+	struct list *listoflist_piv 	= listOfLists->head;
+	struct list *offsets_piv 	= offsets->head;
+	// offset final de la lista de offsets
+
 
 	do {
 		struct listgeneric *listOftags = *((struct listgeneric **) listoflist_piv->element);
 		struct list *listOftags_piv = listOftags->head;  
-		printf("%d: ", elements); elements++;
+		long offset_e =  *((long *) offsets_piv->element);
+		printf("%Ld: ", offset_e);
 		do {
 			struct tag *tag = (struct tag *) listOftags_piv->element;
 			printf("<");
@@ -191,9 +210,22 @@ void showparentstags(FILE *in, struct listgeneric *listOfLists) {
 			printf(">");
 			listOftags_piv = listOftags_piv->sig;  
 		} while (listOftags_piv != NULL );
+
+
+
+
+		// Verifica si es un contenido dentro de la definición de una etiqueta (<..contenido..>) o si eta dentro de
+		// un bloque de etiqueta <tag ... >contenido</tag> 
+ 
+		if(   !(((struct tag *) listOftags->end->element)->offset_b <=  offset_e && 
+			((struct tag *) listOftags->end->element)->offset_e >=  offset_e))  {
+			showcontent_n1(in, ((struct tag *) listOftags->end->element)->name,  offset_e);
+		}
+
 		printf("\n");
 
-		listoflist_piv =  listoflist_piv->sig;
+		listoflist_piv 	= listoflist_piv->sig;
+		offsets_piv	= offsets_piv->sig;
 	} while(listoflist_piv != NULL); 
 	
 	

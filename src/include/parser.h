@@ -9,16 +9,16 @@
 
 struct tag  {
 	char *name;
-	long offset_b;
-	long offset_e;
+	long offset_b; 	// Inicio de la definición de la etiqueta 
+	long offset_e;  // fin de la definición de la etiqueta 
 	char **keys;
 	char **values; 
 };
 
 /* Funciones internas del modulo */
 
-static int findParentsTag2(FILE *in , char *content, struct listgeneric  *listOfList , struct listgeneric *listOfTags, 
-		long offsetlimit, int deepth);
+static int findParentsTag2(FILE *in , char *content, struct listgeneric  *listOfList , struct listgeneric *listOfTags,
+		struct listgeneric *offsets, long offsetlimit, int deepth);
 static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct listgeneric *listOfTags, unsigned maxelemens );
 
 
@@ -39,7 +39,7 @@ int 	findendtag (FILE *, long offset);
 long 	findCommentTag(FILE * ); 
 int  	findendComment(FILE *);
 int 	findTagpairEnd (FILE *, const char *) ;
-int 	findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, unsigned deepth);
+int 	findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, struct listgeneric  **offsets, unsigned deepth);
 
 int 	popTagOfList(struct listgeneric *list, char *tagname) ;
 

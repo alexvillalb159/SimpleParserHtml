@@ -613,7 +613,8 @@ int readcontent(FILE *in, char **buffer, const char *tag) {
  * Devuelve 1 si consigue el contenido y cero en caso contrario. 
  */
 
-int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, unsigned deepth) {
+int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, struct listgeneric  **offsets, 
+	unsigned deepth) {
 
 	unsigned long cursor ;
 	long offsetcomment;	
@@ -621,6 +622,7 @@ int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, un
 	int findParentsTag2_r;
  	struct listgeneric *listOfTags = createlistgeneric(sizeof(struct tag),  0);
 
+ 	*offsets = createlistgeneric(sizeof(long),  0);
 	*listOflist = createlistgeneric(sizeof(struct listgeneric *),  0);
 	int findParentsTag_r = 0;
 
@@ -637,7 +639,7 @@ int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, un
 		// restuara el cursor
 		fseek(in, cursor, SEEK_SET) ;
 
-		findParentsTag2_r = findParentsTag2(in , content, *listOflist , listOfTags, offsetcomment, deepth);	
+		findParentsTag2_r = findParentsTag2(in , content, *listOflist , listOfTags, *offsets, offsetcomment, deepth);	
 		if( findParentsTag2_r >  0 && !findParentsTag_r)  {
 
 			findParentsTag_r = 1;
@@ -654,7 +656,7 @@ int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, un
 
 	// Si no hay más comentarios pero quedan etiquetas por revisar ejecuta este bucle
 	while (findParentsTag2_r !=  0)  {
-		findParentsTag2_r = findParentsTag2(in , content, *listOflist , listOfTags, offsetcomment, deepth);
+		findParentsTag2_r = findParentsTag2(in , content, *listOflist , listOfTags, *offsets, offsetcomment, deepth);
 		if( findParentsTag2_r >  0 && !findParentsTag_r) {
 			findParentsTag_r = 1;
 		}
@@ -672,7 +674,7 @@ int findParentsTag(FILE *in, char *content, struct listgeneric  **listOflist, un
  * cumpla ningua de las 2 excepciones. 
  */
 static int findParentsTag2(FILE *in , char *content, struct listgeneric  *listOfList , struct listgeneric *listOfTags, 
-		long offsetlimit, int deepth) {
+		struct listgeneric *offsets, long offsetlimit, int deepth) {
 
 
 	long offset_c, cursor;
@@ -704,6 +706,8 @@ static int findParentsTag2(FILE *in , char *content, struct listgeneric  *listOf
 			
 				fseek(in, offset_c + content_length, SEEK_SET) ;
 				addlist(listOfList , &listoftagsRelv);
+				addlist(offsets, &offset_c);
+				
 				findContent_r = 1;
 			}
 
@@ -716,9 +720,7 @@ static int findParentsTag2(FILE *in , char *content, struct listgeneric  *listOf
 
 }
 /**
- * Hace las busquedas de las tags y las coloca en listOfTags y offsets. offsets contiene una lista de los offsets en los que 
-   esta cada contenido buscado. Devuelve las maxelemens ultimas tags de la lista
- 
+ * Hace las busquedas de las tags y las coloca en listOfTags y offsets. Devuelve las maxelemens ultimas tags de la lista
  */
 static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct listgeneric *listOfTags, 
 	 unsigned maxelemens ) {
@@ -735,15 +737,12 @@ static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct list
 
 	// Posiciona el marcador de principio de tag al comienzo de cualquier etiqueta
 	result = findanytag (in);
-	offset_i = ftell(in);
+	offset_i = ftell(in) - 1;
 	findendtag(in, offset_i);
-	offset_f = ftell(in);
+	offset_f = ftell(in) - 1;
 	// Restaura la posición de la etiqueta
-	fseek(in, offset_i, SEEK_SET);
+	fseek(in, offset_i + 1, SEEK_SET);
 	
-	printf("Offset: %Ld\n", offset);
-
-
 	/*
 	if(offset >= offset_i && offset < offset_f) {
 		// Si el offset esta dentro de la definición de una etiqueta (no confundir con el bloque de etiqueta) se ignora
@@ -766,8 +765,8 @@ static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct list
 			}
 			else { 
 				//("Incluyendo tag: %s\n", tag->name);
-				tag->offset_b = offset_i;
-				tag->offset_e = offset_f;	
+				tag->offset_b = offset_i ;
+				tag->offset_e = offset_f ;	
 				addlist(listOfTags, tag);
 
 				//("Lista luego de incluir:\n");		
@@ -775,13 +774,13 @@ static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct list
 
 			}
 			result = findanytag (in);
-			offset_i = ftell(in);
+			offset_i = ftell(in) - 1;
 			findendtag(in, offset_i);
-			offset_f = ftell(in);
+			offset_f = ftell(in) - 1;
 
 
 			// Restaura la posición de la etiqueta
-			fseek(in, offset_i, SEEK_SET);
+			fseek(in, offset_i + 1, SEEK_SET);
 		
 
 /*
