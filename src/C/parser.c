@@ -5,9 +5,52 @@
 #include "genericlist.h"
 #include "utils.h"
 #include "file.h"
+#include "array.h"
 
+/**
+ * Rutina que devuelve todo la lista de tags Html del standar official de w3c, leyendolas en el
+ * archivo src/htmltags.txt
+ */
+const char *filehtmltags = "src/htmltags.txt";
 
+/**
+ * Esta rutina devuelve un arrays de todos los nombres de tags validos en Html .
+ * El Primer miembro de este array, es decir el correspondiente al indice 0, apunta a 
+ * la estructura defArray que indica la longitud del array
+ */
+static char **getHtmltags()  {
+	static char **arraytags = NULL;
+	char *string;
+	char tag[256];
 
+	if(arraytags == NULL) {
+		int tag_length;
+
+		FILE *fp = fopen(filehtmltags, "rt");
+
+		readline(fp, &string); free(string); readline(fp, &string); free(string); 
+		readline(fp, &string); free(string); readline(fp, &string); free(string); // Ignora 4 lineas
+		
+		initArray((void ***) &arraytags);
+		while(readline(fp, &string) != EOF) {
+
+			if(sscanf(string, "<%s", tag) == 1) {
+				char *tag_mem;
+				tag_length = strlen(tag);
+				tag[tag_length - 1] = 0;
+				tag_mem = malloc(tag_length + 1);
+				memcpy(tag_mem, tag, tag_length + 1);
+				addArray((void ***) &arraytags, tag_mem );
+				//printf("%s\n", tag);				
+			}
+			free(string);
+		}
+	}
+	return arraytags;
+
+}
+
+	
 /**
  * Encuentra cualquier tag (excepto los tag de comentarios) utilizando menor esfuerzo (puede dar errores)
  * El cursor in se posición exactamente al principio de la etiqueta. Después del caracter '<'
@@ -22,16 +65,23 @@ int findanytag (FILE *in) {
 
 
 		} while (caracter != '<' && NOTEOF(caracter));
+		if(NOTEOF(caracter)) { 
 
- 		offset = ftell(in);
+			offset = ftell(in);
 
-		if (iscommentTag(in, offset )) {
+			if (iscommentTag(in, offset )) {	
+				findendComment(in );
+				continue;
+
+			} else if(isValidtaghtml(in, offset) ) {
+				// Bien			
 			
-			findendComment(in );
-			continue;
-
-		} 
-		fseek(in, offset, SEEK_SET);
+			} else {
+				continue;
+			}
+		
+			fseek(in, offset, SEEK_SET);
+		}
 		break;
 
 	}
@@ -346,6 +396,7 @@ int iscommentTag(FILE *in, const long offset ) {
 
 /**
  * Indica si la etiqueta que comienza a leer en [offset - 1] tiene el nombre de tag_s
+ * Retorna
  */
 int isTag(FILE *in, const char * tag_s, const long offset ) {
 	int caracter ;
@@ -366,6 +417,58 @@ int isTag(FILE *in, const char * tag_s, const long offset ) {
 	return 1;
 
 }
+/**
+ * Indica si es un nombre de etiqueta válido
+ */
+int isValidtaghtml(FILE *in, unsigned offset) {
+	fseek(in, offset, SEEK_SET);
+	char *name = getField(in, " >");
+	if(name[0] == '/') {
+		// Es una etiqueta final
+		name = name + 1;
+	}
+	return isValidtaghtml2(name) != -1 ;
+
+}
+/**
+ * Busca la etiqueta tagname en el array devuelto por getHtmltags utilizando un algoritmo de 
+ * busqueda binaria
+ */
+static int isValidtaghtml2(char *tagname) {
+	char **tags = getHtmltags();
+	int length = getLengthArray2((void **) tags);
+	int ind_a = 1,	 ind_z = length, ind_m =	(ind_z + ind_a) / 2;
+	int str_r;
+
+	while((str_r = strcmp (tags[ind_m], tagname)) != 0) {
+		// tags[ind_m] > tagname
+		int ind_m1 = ind_m;
+		if(str_r > 0) {
+			// La cadena esta entre ind_a y ind_m
+			ind_z = ind_m ; ind_m =	(ind_z + ind_a) / 2;
+
+
+			
+		}
+		else if(str_r < 0) {
+			// La cadena esta entre ind_m y ind_z
+			ind_a = ind_m; 	 ind_m = (ind_z + ind_a) / 2;
+		} 
+
+		if(ind_m1 == ind_m) {
+			ind_m = -1;
+			break;
+		} 
+		
+
+	}
+	return ind_m;
+
+}
+
+
+
+
 /**
  * Indica si tagpair es el bloque final de tag_s
  * el nombre o el marcador de tag de fin de bloque.
@@ -938,6 +1041,3 @@ long findCommentTag(FILE *in ) {
 
 
 }
-
-
-

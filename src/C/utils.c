@@ -7,12 +7,13 @@ int getLengthArray(void *array[]) {
 }
 
 // Pasa una letra caracter a mayúscula
-unsigned char caseU(char caracter) {
+unsigned char caseU(char caracter, int ucase) {
 
-	if(caracter >= 'a' && caracter <= 'z') {
-		caracter= 'A' + caracter - 'a';
+	if(ucase) {
+		if(caracter >= 'a' && caracter <= 'z') {
+			caracter= 'A' + caracter - 'a';
+		}
 	}
-
 	return caracter; 
 }
 

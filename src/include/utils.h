@@ -5,7 +5,7 @@
 #define CASTULONG(expr)  *((unsigned long *) expr)
 
 int getLengthArray(void *);
-unsigned char caseU(char );
+unsigned char caseU(char, int);
 int isCharacter(int  , const char * );
 
 #endif

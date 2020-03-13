@@ -2,6 +2,46 @@
 #include <stdlib.h>
 #include "file.h"
 #include "utils.h"
+
+/**
+ *	Lee una línea de texto (terminada en '\n') en el stream fp
+ *	Parametros: fp:strem, string:puntero a puntero char sin inicializar 
+ *	en el cual se almacenara la stream leída
+ *	Devuelve el ultimo caracter leído o EOF en caso de fallar. 
+ */
+int readline(FILE *fp, char **string) {
+
+	int caracter;
+	int length = getLengthline(fp, &caracter);
+
+
+	if(caracter != EOF || length != 1) {
+		fseek(fp,  (-1)*length, SEEK_CUR);
+		*string = malloc(length + 1);
+		for(int i=0; i < length; i++) {
+			(*string)[i] = fgetc(fp);
+		}
+		(*string)[length] = 0;
+	}
+
+	return caracter;
+
+}
+
+/**
+ *	Devuelve la longitud línea de texto (terminada en '\n') del stream fp
+ *	Parametros: fp:stream, caracter: el ultimo caracter leído
+ *	Si llega a EOF devuelve ese valor en caracter.
+ */
+int getLengthline(FILE *fp, int *caracter) {
+	int length = 0;
+	do {
+		*caracter = fgetc(fp); length++;
+	} while(*caracter != '\n' && *caracter != EOF);
+	return length;
+
+}
+
 /**
  * Encuentra una string independientemente del contexto de busqueda en el stream in. 
  * Si no consigue el string devuelve un valor > 255 ó < 0 caso contrario devuelve
@@ -14,6 +54,8 @@ int findString (FILE *in, const char *string) {
 	char initcaract = string[0]; 
 	int caracter, i=0; 
 	int string_length = strlen(string);
+	int ucase = 0; 		// Bandera que indica si la busqueda se hará para exactamente los caracteres de string o
+				// o independientemente de si están mayúsculas o minúsculas. 
 
 	// Verifica si todos los caracteres son iguales excepto el ultimo			
 	if(string[1] == '\0') { 		// Caso de un carácter
@@ -44,13 +86,15 @@ int findString (FILE *in, const char *string) {
 	} else {
 		do {
 			caracter = fgetc(in);
-			if(caseU(caracter) == caseU(string[i]) ) {
+			if(caseU(caracter, ucase) == caseU(string[i], ucase) ) {
 				i++;
-			} else if(caseU(caracter) != caseU(initcaract)) {
+			} else if(caseU(caracter, ucase) != caseU(initcaract, ucase)) {
 				i=0;
 			} else {
 				i=1;
 			}
+
+
 		} while	(NOTEOF(caracter) && i != string_length);
 	}
 	if(i == string_length ) {
@@ -68,9 +112,10 @@ int findString (FILE *in, const char *string) {
 int  strcmp_m (FILE *in, const char *tag ) {
 	int i=0;
 	int caracter;
+	int ucase = 0;
 	do {
 		caracter = fgetc (in);
-		if(caseU(tag[i]) != caseU(caracter)) {
+		if(caseU(tag[i], ucase) != caseU(caracter, ucase)) {
 			return -1; 
 			break;
 		}

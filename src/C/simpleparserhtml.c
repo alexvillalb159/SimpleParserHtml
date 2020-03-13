@@ -13,7 +13,6 @@
 
 void showhelp ();
 void getKeysandValues (char **attribs, char ***keys, char ***values);
-unsigned char caseU(char caracter);
 char * printbuffer(char *nueva);
 void showcontent(FILE *in, const char *, struct listgeneric *offsets);
 void showcontent_n1(FILE *in, const char *lasttag, long offset);
@@ -111,7 +110,7 @@ void showhelp (char *selfname) {
 	printf("\t\x1b[1;32mDisplay the parents tags that includes the content:\x1b[0m\n");
 	printf("\t%s -d number [FILE] [CONTENT]\n", selfname);
 	printf("\tOptions: -d n: indicate the number of parents tag to display\n");	
-	printf("\tRemember: for catch the attrib class='nada' you must writing in the arguments class=\'nada\'");		
+	printf("\tRemember: for catch the attrib class='nada' you must writing in the arguments class=\\\'nada\\\' \n");		
 
 	
 
@@ -129,7 +128,7 @@ char * printbuffer(char *nueva) {
 	static int elements = 1;
 
 	if(nueva[0] != '\0') 
-		asprintf(&output, "%s\n%d: %s", output, elements, nueva );
+		asprintf(&output, "%s\n\x1b[1;31m%d: \x1b[0m%s", output, elements, nueva );
 	elements++;
 	return output;
 
@@ -166,7 +165,7 @@ void showcontent(FILE *in, const char *lasttag, struct listgeneric *offsets) {
 
 	buffer = printbuffer("\0");
 	printf("%s\n", buffer);
-	free(buffer);
+	//free(buffer);
 
 }
 
@@ -194,7 +193,7 @@ void showparentstags(FILE *in, struct listgeneric *listOfLists, struct listgener
 		struct listgeneric *listOftags = *((struct listgeneric **) listoflist_piv->element);
 		struct list *listOftags_piv = listOftags->head;  
 		long offset_e =  *((long *) offsets_piv->element);
-		printf("%Ld: ", offset_e);
+		printf("\x1b[1;31m%Ld: \x1b[0m", offset_e);
 		do {
 			struct tag *tag = (struct tag *) listOftags_piv->element;
 			printf("<");

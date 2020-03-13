@@ -26,6 +26,9 @@ static struct listgeneric  * findParentsTag3 (FILE *in, long offset, struct list
 /* ------------------------------------------------------------------------------- */
 
 
+static char **getHtmltags();
+int isValidtaghtml(FILE *in, unsigned offset);
+static int isValidtaghtml2(char *tagname) ;
 
 int 	findanytag (FILE *);
 
