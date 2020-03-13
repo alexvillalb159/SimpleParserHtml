@@ -14,6 +14,7 @@ son las etiquestas con ese contenido.
 
 Por ejemplo sea el documento test.html:
 
+```
 <html>
 <head>
 </head>
@@ -33,13 +34,15 @@ Por ejemplo sea el documento test.html:
 	</body>
 </html>
 
+```
+
 En el primer modo de operación para ver el contenido que esta 
 entre todas las etiquetas table se ejecuta el comando:
 
 ./simpleparserhtml test.html table
 
 El resultado seria:
-
+`
 1: 
 		<tr>Hello World 1</tr>
 	
@@ -48,6 +51,7 @@ El resultado seria:
 	
 3: 
 		<tr>hello world 3</tr>
+`
 
 Las apariciones son numeradas de uno en uno siguiendo el mismo 
 orden en el cual se encuentra en el archivo, la numeración se 
@@ -65,8 +69,9 @@ cosas:
 
 Resultado:
 
+`
 1: Hello World 2
-
+`
 
 En el 2do Modo se operación se le específica el contenido del 
 archivo html y este indica las tags en las que se encuentra ese
@@ -80,8 +85,10 @@ documento del caso anterior este seria un ejemplo:
 
 La salidad seria:
 
+`
 96: <html><body><table class='hello' id=200>
 192: <body><table class='nothing' id=300><tr>hello world 3
+`
 
 Donde los números de la derecha (96, 192) son los offsets en el 
 cual esta el contenido buscado ("hello"), en color rojo. Luego 
