@@ -1,5 +1,5 @@
 SimpleParserHtml (see in English)
-================
+=================================
 
 ------------------------------------------------------------------
 Un simple parseador de línea de comandos para documentos html. 
