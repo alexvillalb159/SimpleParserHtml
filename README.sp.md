@@ -9,8 +9,8 @@ que esta en una <b>ruta de tags o etiquetas</b>, que es un
 conjunto de tags contenidas una dentro de la otra de forma 
 consecutiva. 
 
-En otro modo de operación se le da el contenido y muestra cuales 
-son las etiquestas que contienen ese contenido.
+En otro modo de operación se le da de entrada el contenido y 
+muestra cuales son las etiquestas que contienen ese contenido.
 
 Por ejemplo sea el documento test.html:
 
