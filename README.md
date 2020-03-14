@@ -4,18 +4,18 @@ SimpleParserHtml ([ver en Español](README.sp.md))
 ------------------------------------------------------------------
 
 
-Un simple parseador de línea de comandos para documentos html. 
+A simple command line parser for html documents.
 
-Tiene dos modos de operación, uno el el cual muestra el contenido 
-que esta en una <b>ruta de tags o etiquetas</b>, que es un 
-conjunto de tags contenidas una dentro de la otra de forma 
-consecutiva. 
+It has two modes of operation, one of which shows the content
+which is in a <b> tag or tag path </b>, which is a
+set of tags contained one inside the other so
+consecutive.
 
-En otro modo de operación se le da el contenido y muestra cuales 
-son las etiquestas con ese contenido.
+In another mode of operation, it is given input to any content to 
+search in the html document (which may or may not be visible) 
+and shows what the tags are with that content.
 
-Por ejemplo sea el documento test.html:
-
+For example given the document test.html:
 ```
 <html>
 <head>
@@ -38,12 +38,15 @@ Por ejemplo sea el documento test.html:
 
 ```
 
-En el primer modo de operación para ver el contenido que esta 
-entre todas las etiquetas table se ejecuta el comando:
+
+In the first mode of operation to see the content that is between 
+all the 'table' labels, this command is executed:
 
 ./simpleparserhtml test.html table
 
-El resultado seria:
+The result would be:
+
+
 ```
 1: 
 		<tr>Hello World 1</tr>
@@ -55,54 +58,49 @@ El resultado seria:
 		<tr>hello world 3</tr>
 ```
 
-Las apariciones son numeradas de uno en uno siguiendo el mismo 
-orden en el cual se encuentra en el archivo, la numeración se 
-coloca a la derecha del contenido encontrado en color rojo. En 
-el caso de arriba el número '1' indica la primera aparación del 
-contenido buscado, luego de los dos punto ':', aparece el 
-contenido original del archivo y así para el 2 y el 3.
 
-Si se quiere hacer una busqueda más específica se puede 
-especificar las etiquetas consecutivas en la que esta el contenido
-o los atributos de las etiquetas. Este comando mezcla las dos 
-cosas:
+The results are numbered one by one following the same order in 
+which it is found in the file, the numbering is placed to the 
+right of the content found in red. In the case above, the number 
+'1' indicates the first appearance of the content sought, after 
+the two points ':', the original content of the file appears and 
+thus for 2 and 3.
+
+If you want to do a more specific search, you can specify the 
+consecutive labels in which the content or attributes of the 
+labels are. This command mixes the two things:
 
 ./simpleparserhtml test.html table class=\'hello\' tr id=29
 
-Resultado:
+Outcome:
 
 ```
 1: Hello World 2
 ```
 
-En el 2do Modo se operación se le específica el contenido del 
-archivo html y este indica las tags en las que se encuentra ese
-contenido. Es obligatorio específicar el grado de profundidad, 
-luego del parámetro -d, que indica cuantos de los tags, que 
-encierran el contenido, se mostrarán. Los tags en los que esta el 
-contenido se muestran junto con sus atributoe. Para el mismo 
-documento del caso anterior este seria un ejemplo:
+
+In the 2nd Mode, the content to search in the html file is 
+specified and the tags in which that content is found are obtained
+as output. It is mandatory to specify the degree of depth, after 
+the -d parameter, which indicates how many of the Tags, which 
+enclose the content, will be displayed. Tags in that this content 
+is displayed along with its attributes. For the same document 
+from the previous case this would be an example:
 
 ./simpleparserhtml -d 3 tests/simpleparserhtml/test.html "hello"
 
-La salidad seria:
+The output would be:
 
 ```
 96: <html><body><table class='hello' id=200>
 192: <body><table class='nothing' id=300><tr>hello world 3
 ```
 
-Donde los números de la derecha (96, 192) son los offsets en el 
-cual esta el contenido buscado ("hello"), en color rojo. Luego 
-de los dos puntos del offset se imprimen la ruta de etiquetas y 
-el contenido. Notese que en el caso del offset 96 el contenido 
-esta dentro de la misma definición de la etiqueta y no en el 
-contenido o el bloque de esta. 
-
-Espero mejorar más el código y amplicar las funcionalidades
-del mismo.
-
+Where the numbers on the right (96, 192) are the offsets in which 
+the searched content is ("hello"), in red. After the ':' 
+character, following the offset, the label path is printed and
+the content. Note that in the case of offset 96 the content
+It is within the same definition of the label and not in the
+content or block of this.
 
 ------------------------------------------------------------------
-
-
