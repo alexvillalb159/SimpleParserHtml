@@ -9,10 +9,9 @@ que esta en una <b>ruta de tags o etiquetas</b>, que es un
 conjunto de tags contenidas una dentro de la otra de forma 
 consecutiva. 
 
-En otro modo de operación se le da cualquier contenido del 
-documento a buscar en el documento html (que puede ser 
-visible o no) y muestra cuales son las etiquestas con ese 
-contenido.
+En otro modo de operación se le da de entrada cualquier contenido
+a buscar en el documento html (que puede ser visible o no) y 
+muestra cuales son las etiquestas con ese contenido.
 
 
 
