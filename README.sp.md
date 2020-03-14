@@ -76,13 +76,15 @@ Resultado:
 1: Hello World 2
 ```
 
-En el 2do Modo se operación se le específica el contenido del 
-archivo html y este indica las tags en las que se encuentra ese
-contenido. Es obligatorio específicar el grado de profundidad, 
-luego del parámetro -d, que indica cuantos de los tags, que 
-encierran el contenido, se mostrarán. Los tags en los que esta el 
-contenido se muestran junto con sus atributoe. Para el mismo 
-documento del caso anterior este seria un ejemplo:
+
+
+En el 2do Modo se operación se específica el contenido a buscar 
+en el  archivo html y se obtiene como salida las tags en las que 
+se encuentra ese contenido. Es obligatorio específicar el grado de
+profundidad, luego del parámetro -d, que indica cuantos de los 
+tags, que encierran el contenido, se mostrarán. Los tags en los 
+que esta el contenido se muestran junto con sus atributos. Para 
+el mismo documento del caso anterior este seria un ejemplo:
 
 ./simpleparserhtml -d 3 tests/simpleparserhtml/test.html "hello"
 
@@ -99,9 +101,5 @@ de los dos puntos del offset se imprimen la ruta de etiquetas y
 el contenido. Notese que en el caso del offset 96 el contenido 
 esta dentro de la misma definición de la etiqueta y no en el 
 contenido o el bloque de esta. 
-
-Espero mejorar más el código y amplicar las funcionalidades
-del mismo.
-
 
 ------------------------------------------------------------------
