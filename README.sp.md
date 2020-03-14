@@ -4,13 +4,13 @@ SimpleParserHtml (see in English)
 ------------------------------------------------------------------
 Un simple parseador de línea de comandos para documentos html. 
 
-Tiene dos modos de operación, uno el el cual muestra el contenido 
+Tiene dos modos de operación, uno en el cual muestra el contenido 
 que esta en una <b>ruta de tags o etiquetas</b>, que es un 
 conjunto de tags contenidas una dentro de la otra de forma 
 consecutiva. 
 
 En otro modo de operación se le da el contenido y muestra cuales 
-son las etiquestas con ese contenido.
+son las etiquestas que contienen ese contenido.
 
 Por ejemplo sea el documento test.html:
 
